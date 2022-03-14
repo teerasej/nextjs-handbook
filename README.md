@@ -3,6 +3,7 @@
 
 ## Workshop
 - [Pre-rendering](pre-rendering/readme.md)
+- [Next.js Components](components/README.md)
 
 
 ## Request training or consultant
