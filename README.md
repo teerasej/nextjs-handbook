@@ -4,6 +4,7 @@
 ## Workshop
 - [Pre-rendering](pre-rendering/readme.md)
 - [Next.js Components](components/README.md)
+- [Route](route/README.md)
 
 
 ## Request training or consultant
