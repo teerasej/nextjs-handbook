@@ -121,9 +121,59 @@ const ProtectedPage: NextPage = ({ }: InferGetServerSidePropsType<typeof getServ
 export default ProtectedPage
 ```
 
-## 5. เรียกใช้ signIn function ของ next-auth เพื่อทำการ authen
+## 5. เรียกใช้ Session จาก server side
 
-เปิดไฟล์ 
+```tsx
+import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from "next";
+import { getSession, signOut, useSession } from "next-auth/react"
+import { useRouter } from "next/router";
+
+// implement getServerSideProps
+export const getServerSideProps: GetServerSideProps = async (context) => {
+
+    // ดึง session ออกมาแล้วส่งเข้าไปใน page
+    const currentSession = await getSession(context)
+
+    return {
+        props: {
+            session: currentSession
+        }
+    }
+}
+
+const ProtectedPage: NextPage = ({ session }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
+    const router = useRouter()
+
+    useSession({
+        required: true,
+        onUnauthenticated: () => {
+            router.push('/signin')
+        }
+    })
+
+    // เช็ค session 
+    if (!session) {
+        return (
+            <div>
+                <p>Access Denied</p>
+            </div>
+        )
+    }
+
+    return (
+        <div>
+            <h1>Protected Page</h1>
+        </div>
+    )
+}
+
+export default ProtectedPage
+```
+
+## 6. เรียกใช้ signIn function ของ next-auth เพื่อทำการ authen
+
+เปิดไฟล์ **signin.tsx**
 
 ```tsx
 
@@ -204,11 +254,11 @@ const SignInPage: NextPage = () => {
 export default SignInPage
 ```
 
-## 6. ปรับเพิ่ม Session role
+## 7. ปรับเพิ่ม Session role
 
 - เปิดไฟล์ **pages/api/auth/[...nextauth].ts**
 - สร้าง type และแก้ไขส่วน callback ของ `NextAuth({})`
-- ทดสอบในส่วน protected page
+
 
 ```tsx
 
@@ -232,3 +282,74 @@ export default NextAuth({
     }
   },
 })
+```
+
+## 8. เรียกใช้ Session Role ใน Protected Page
+
+เปิดไฟล์ **pages/protected.tsx**
+
+```tsx
+return (
+        <div>
+            <h1>Protected Page</h1>
+            <p>User role: { session.role }</p>
+        </div>
+    )
+```
+
+## 9. Sign out 
+
+
+```tsx
+import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from "next";
+import { getSession, signOut, useSession } from "next-auth/react"
+import { useRouter } from "next/router";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+
+    const currentSession = await getSession(context)
+
+    return {
+        props: {
+            session: currentSession
+        }
+    }
+}
+
+const ProtectedPage: NextPage = ({ session }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
+    const router = useRouter()
+
+    useSession({
+        required: true,
+        onUnauthenticated: () => {
+            router.push('/signin')
+        }
+    })
+
+    // เรียกใช้ signOut ของ next-auth
+    const onSignOut = () => {
+        signOut()
+    }
+
+    if (!session) {
+        return (
+            <div>
+                <p>Access Denied</p>
+            </div>
+        )
+    }
+
+    return (
+        <div>
+            <h1>Protected Page</h1>
+            <p>User role: { session.role }</p>
+
+            {/* เรียกใช้ function onSignOut */}
+            <a onClick={onSignOut}>Sign out</a>
+        </div>
+    )
+}
+
+export default ProtectedPage
+```
