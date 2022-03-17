@@ -82,6 +82,25 @@ export default NextAuth({
 })
 ```
 
+จากนั้นทำการครอบ Component ด้วย `<SessionProvider>` ใน MyApp
+
+```ts
+import '../styles/globals.css'
+import type { AppProps } from 'next/app'
+import { SessionProvider } from 'next-auth/react'
+
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <SessionProvider session={pageProps.session}>
+      <Component {...pageProps} />
+    </SessionProvider>
+  )
+}
+
+export default MyApp
+
+```
+
 ## 4. เรียกใช้ session เป็นเงื่อนไขในการแสดงข้อมูล
 
 เปิดไฟล์ **pages/protected.tsx** และแก้ไขโค้ดตามด้านล่าง
