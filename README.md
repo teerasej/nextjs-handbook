@@ -5,7 +5,7 @@
 - [Pre-rendering](pre-rendering/readme.md)
 - [Next.js Components](components/README.md)
 - [Route](route/README.md)
-
+- [API & Authentication](api/README.md)
 
 ## Request training or consultant
 
